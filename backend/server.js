@@ -23,25 +23,9 @@ const app = express();
 // Middleware
 app.use(express.json());
 
-// 🔒 تنظیمات CORS
-const allowedOrigins = [
-  'https://e-commerce-website-project-ieph.vercel.app',
-  'http://localhost:5173',
-  'https://e-commerce-website-project-h6vp.vercel.app'
-];
-
+// ✅ CORS - همه را قبول کن
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
-      callback(null, true);
-    } else {
-      console.warn(`CORS blocked request from: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
@@ -74,7 +58,6 @@ const PORT = process.env.PORT || 3000;
 if (process.env.NODE_ENV !== 'production') {
   app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
-    console.log(`🌐 CORS enabled for:`, allowedOrigins.join(', '));
   });
 }
 
