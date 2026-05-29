@@ -26,6 +26,7 @@ app.use(express.json());
 // 🔒 تنظیمات CORS
 const allowedOrigins = [
   'https://e-commerce-website-project-ieph.vercel.app',
+  'https://e-commerce-website-project-vg48.vercel.app', // ← آدرس جدید frontend
   'http://localhost:5173',
   'https://e-commerce-website-project-h6vp.vercel.app'
 ];
