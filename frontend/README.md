@@ -18,24 +18,45 @@ https://e-commerce-website-project-b6ac-isw3zzd4m-yousuf-s-projects3.vercel.app/
 ## 🛠 Tech Stack
 
 ### Frontend
+
 - React
 - Tailwind CSS
 - React Router
 - Axios
 
 ### Backend
+
 - Node.js
 - Express.js
 - MongoDB
 - JWT Authentication
 
 chat
+
 ## 📁 Project Structure
 
 ```
 frontend/
 backend/
 ```
+
+# 📷 Project Preview
+
+## 🏠 Home Page
+
+![Home](images/home.png)
+
+---
+
+## 🛍 Products Page
+
+![Products](images/products.png)
+
+---
+
+## ⚙️ Admin Dashboard
+
+![Admin](images/admin.png)
 
 ## ⚙️ Installation
 
