@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 
+dotenv.config();
+
 const connectDB = require("./config/db");
 
 const userRoutes = require("./routes/userRoutes");
@@ -15,27 +17,34 @@ const adminRoutes = require("./routes/adminRoutes");
 const productAdminRoutes = require("./routes/productAdminRoutes");
 const adminOrderRoutes = require("./routes/adminOrderRoutes");
 
-// Load env variables
-dotenv.config();
-
 const app = express();
 
 // Middleware
-app.use(express.json());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "*",
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  }),
+);
 
-// ✅ CORS - همه را قبول کن
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-}));
-
-// Database connection
-connectDB();
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true }));
 
 // Home route
 app.get("/", (req, res) => {
-  res.send("WELCOME TO YSHOP API ✅ CORS FIXED!");
+  res.status(200).json({
+    success: true,
+    message: "Welcome to YShop API!",
+  });
+});
+
+// Health check
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "YShop API is running",
+  });
 });
 
 // API Routes
@@ -52,13 +61,47 @@ app.use("/api/admin/users", adminRoutes);
 app.use("/api/admin/products", productAdminRoutes);
 app.use("/api/admin/orders", adminOrderRoutes);
 
-// Server
+// Handle unknown routes
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: `Route not found: ${req.method} ${req.originalUrl}`,
+  });
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error("Server error:", err.message);
+
+  res.status(err.status || 500).json({
+    success: false,
+    message:
+      process.env.NODE_ENV === "production"
+        ? "Internal server error"
+        : err.message,
+  });
+});
+
+// Start server after database connection
 const PORT = process.env.PORT || 3000;
 
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => {
-    console.log(` Server running on http://localhost:${PORT}`);
-  });
+let server;
+
+async function startServer() {
+  try {
+    await connectDB();
+
+    server = app.listen(PORT, "0.0.0.0", () => {
+      console.log(`YShop API running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Failed to start YShop API:", error.message);
+    process.exit(1);
+  }
 }
 
-module.exports = app; 
+if (require.main === module) {
+  startServer();
+}
+
+module.exports = app;
